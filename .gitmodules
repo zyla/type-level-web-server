@@ -1,3 +1,0 @@
-[submodule "hint"]
-	path = hint
-	url = https://github.com/mvdan/hint

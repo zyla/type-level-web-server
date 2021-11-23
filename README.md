@@ -7,8 +7,7 @@ A web server implemented at the type level in Haskell.
 To run it:
 
 ```
-cabal new-build
-./run HttpServer.hs
+stack run HttpServer.hs
 ```
 
 Then go to <http://localhost:3000/README.md> to confirm that it works.

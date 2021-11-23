@@ -7,7 +7,6 @@ import Language.Haskell.Interpreter
 import Parser
 import Data.Function (fix)
 import System.FilePath (dropExtension)
-import Network
 import Network.Socket
 import Foreign.C.Types
 import Foreign.Ptr
@@ -49,7 +48,13 @@ main = do
 anyaddr = tupleToHostAddress (0, 0, 0, 0)
 
 execute (Listen port k) = do
-  sock@(MkSocket sockfd _ _ _ _) <- listenOn (PortNumber (fromIntegral port))
+  let hints = defaultHints { addrFlags = [AI_NUMERICHOST, AI_NUMERICSERV], addrSocketType = Stream }
+  addr:_ <- getAddrInfo (Just hints) (Just "0.0.0.0") (Just (show port))
+  sock <- socket (addrFamily addr) (addrSocketType addr) (addrProtocol addr)
+  setSocketOption sock ReuseAddr 1
+  bind sock (addrAddress addr)
+  listen sock 50
+  sockfd <- socketToFd sock
   setNonBlockingFD sockfd False
   apply k (show sockfd)
 
